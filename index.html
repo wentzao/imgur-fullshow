@@ -245,35 +245,38 @@
             // 解析新參數（向下相容：缺少時使用預設值）
             const showTitle = params.st !== '0';  // 預設顯示
             const showFooter = params.sf !== '0'; // 預設顯示
-            const contentPadding = params.cp || '10';
+            // 支援舊版 cp 參數和新版 px/py 參數
+            const oldPadding = params.cp || '10';
+            const paddingX = params.px || oldPadding;
+            const paddingY = params.py || oldPadding;
             const bgType = params.bt || 'dots';
             const bgColor = params.bc ? decodeURIComponent(params.bc) : '#FFFFFF';
             const bgImage = params.bi ? decodeURIComponent(params.bi) : null;
-            const imageLayout = params.il || 'horizontal';
             const imageGap = params.ig !== '0'; // 預設有間距
 
             // 應用背景設定
             applyBackground(bgType, bgColor, bgImage);
 
-            // 應用邊界
-            document.getElementById('content').style.padding = contentPadding + 'px';
+            // 應用邊界（分別應用左右和上下）
+            const content = document.getElementById('content');
+            content.style.padding = `${paddingY}px ${paddingX}px`;
 
-            // 應用圖片容器樣式
-            if (imageLayout === 'vertical') {
-                container.style.flexDirection = 'column';
-                container.style.alignItems = 'center';
-            } else {
-                container.style.flexDirection = 'row';
-            }
+            // 移除 Bootstrap 的 gutter
+            container.style.setProperty('--bs-gutter-x', '0');
+            container.style.setProperty('--bs-gutter-y', '0');
+            container.classList.remove('container-fluid');
+            container.style.display = 'flex';
+            container.style.flexWrap = 'wrap';
+            container.style.justifyContent = 'center';
+            container.style.width = '100%';
+            container.style.margin = '0';
+            container.style.padding = '0';
 
             // 圖片間距
             if (!imageGap) {
                 container.style.gap = '0';
-                // 移除圖片容器的 padding
-                document.documentElement.style.setProperty('--img-padding', '0');
             } else {
                 container.style.gap = '10px';
-                document.documentElement.style.setProperty('--img-padding', '10px');
             }
 
             // 標題和日期（根據 showTitle 參數決定是否顯示）
@@ -311,9 +314,9 @@
 
             if (params.id) {
                 let imageIds = params.id.split(',');
-                let colClass = imageLayout === 'vertical'
-                    ? 'col-12'
-                    : `col-12 col-lg-${12 / (params.imageCount || 3)}`;
+                // 根據 imageCount 設定欄寬（桌機版）
+                const imgCount = parseInt(params.imageCount) || 3;
+                let colClass = `col-12 col-lg-${Math.floor(12 / imgCount)}`;
 
                 imageIds.forEach((id) => {
                     let imgContainer = document.createElement('div');
