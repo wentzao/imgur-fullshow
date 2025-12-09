@@ -260,6 +260,11 @@
             content.style.paddingLeft = screenPaddingH + 'px';
             content.style.paddingRight = screenPaddingH + 'px';
 
+            // 同時調整 Bootstrap container-fluid 的 padding 和 gutter
+            container.style.paddingLeft = screenPaddingH + 'px';
+            container.style.paddingRight = screenPaddingH + 'px';
+            container.style.setProperty('--bs-gutter-x', screenPaddingH * 2 + 'px');
+
             // 設定圖片容器間距
             container.style.rowGap = imageGapV + 'px';
             container.style.columnGap = imageGapH + 'px';
