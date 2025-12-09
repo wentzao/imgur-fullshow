@@ -259,15 +259,11 @@
             applyBackground(bgType, bgColor, bgImage);
 
             // 應用螢幕邊界（上下、左右分開）
-            content.style.paddingTop = screenPaddingV + 'px';
-            content.style.paddingBottom = screenPaddingV + 'px';
-            content.style.paddingLeft = screenPaddingH + 'px';
-            content.style.paddingRight = screenPaddingH + 'px';
+            content.style.padding = `${screenPaddingV}px ${screenPaddingH}px`;
 
-            // 同時調整 Bootstrap container-fluid 的 padding 和 gutter
-            container.style.paddingLeft = screenPaddingH + 'px';
-            container.style.paddingRight = screenPaddingH + 'px';
-            container.style.setProperty('--bs-gutter-x', screenPaddingH * 2 + 'px');
+            // 同時調整 container-fluid 的 padding（使用完整 padding 屬性覆蓋 CSS）
+            container.style.padding = `${screenPaddingV}px ${screenPaddingH}px`;
+            container.style.setProperty('--bs-gutter-x', '0px');
 
             // 設定圖片容器間距
             container.style.rowGap = imageGapV + 'px';
