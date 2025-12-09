@@ -23,7 +23,8 @@
             height: 100%;
             background-color: #FFF;
             overflow-x: hidden;
-            overflow-y: auto;
+            overflow-y: hidden;
+            /* 全域隱藏垂直滾動條 */
             display: flex;
             flex-direction: column;
             font-family: 'Noto Sans TC', sans-serif;
@@ -243,6 +244,7 @@
             // 解析新參數（向下相容：缺少時使用預設值）
             const showTitle = params.st !== '0';  // 預設顯示
             const showFooter = params.sf !== '0'; // 預設顯示
+            const imageRounded = params.br !== '0'; // 預設有圓角 (1)
             const screenPaddingV = params.spv || '10';
             const screenPaddingH = params.sph || '10';
             const bgType = params.bt || 'dots';
@@ -321,6 +323,11 @@
                         img.src = "https://i.imgur.com/" + id + ".jpg";
                     }
                     img.alt = "Image";
+
+                    // 應用圓角設定
+                    if (!imageRounded) {
+                        imgContainer.style.borderRadius = '0';
+                    }
 
                     imgContainer.appendChild(img);
                     container.appendChild(imgContainer);
