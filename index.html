@@ -130,7 +130,7 @@
             }
 
             #content {
-                padding: 0px !important;
+                /* padding controlled by JS, removed !important */
             }
         }
 
@@ -196,7 +196,7 @@
             } finally {
                 document.getElementById("loading-spinner").style.display = "none";
                 document.getElementById("content").style.display = "block";
-                document.getElementById("footer").style.display = "block";
+                // footer display is now controlled by displayParams based on sf parameter
                 const height = document.body.scrollHeight;
                 parent.postMessage({ height: height }, "*");
             }
