@@ -236,6 +236,8 @@
 
         function displayParams(params) {
             let container = document.getElementById("image-container");
+            const content = document.getElementById('content');
+            const footer = document.getElementById('footer');
 
             if (params.data) {
                 let decompressedData = decompressData(params.data);
@@ -245,41 +247,27 @@
             // 解析新參數（向下相容：缺少時使用預設值）
             const showTitle = params.st !== '0';  // 預設顯示
             const showFooter = params.sf !== '0'; // 預設顯示
-            // 支援舊版 cp 參數和新版 px/py 參數
-            const oldPadding = params.cp || '10';
-            const paddingX = params.px || oldPadding;
-            const paddingY = params.py || oldPadding;
+            const screenPaddingV = params.spv || '10';
+            const screenPaddingH = params.sph || '10';
             const bgType = params.bt || 'dots';
             const bgColor = params.bc ? decodeURIComponent(params.bc) : '#FFFFFF';
             const bgImage = params.bi ? decodeURIComponent(params.bi) : null;
-            const imageGap = params.ig !== '0'; // 預設有間距
+            const imageGapV = params.igv || '10';
+            const imageGapH = params.igh || '10';
 
             // 應用背景設定
             applyBackground(bgType, bgColor, bgImage);
 
-            // 應用邊界（分別應用左右和上下）
-            const content = document.getElementById('content');
-            content.style.padding = `${paddingY}px ${paddingX}px`;
+            // 應用螢幕邊界（上下、左右分開）
+            content.style.paddingTop = screenPaddingV + 'px';
+            content.style.paddingBottom = screenPaddingV + 'px';
+            content.style.paddingLeft = screenPaddingH + 'px';
+            content.style.paddingRight = screenPaddingH + 'px';
 
-            // 移除 Bootstrap 的 gutter
-            container.style.setProperty('--bs-gutter-x', '0');
-            container.style.setProperty('--bs-gutter-y', '0');
-            container.classList.remove('container-fluid');
-            container.style.display = 'flex';
-            container.style.flexWrap = 'wrap';
-            container.style.justifyContent = 'center';
-            container.style.width = '100%';
-            container.style.margin = '0';
-            container.style.padding = '0';
+            // 設定圖片容器間距
+            container.style.rowGap = imageGapV + 'px';
+            container.style.columnGap = imageGapH + 'px';
 
-            // 圖片間距
-            if (!imageGap) {
-                container.style.gap = '0';
-            } else {
-                container.style.gap = '10px';
-            }
-
-            // 標題和日期（根據 showTitle 參數決定是否顯示）
             if (params.title && showTitle) {
                 document.title = params.title;
 
@@ -308,30 +296,24 @@
                     titleContainer.appendChild(dateContainer);
                 }
             } else if (params.title) {
-                // 即使不顯示標題，也設定頁面標題
+                // 即使不顯示標題，也設定文檔標題
                 document.title = params.title;
             }
 
             if (params.id) {
                 let imageIds = params.id.split(',');
-                // 根據 imageCount 設定欄寬（桌機版）
-                const imgCount = parseInt(params.imageCount) || 3;
-                let colClass = `col-12 col-lg-${Math.floor(12 / imgCount)}`;
+                let colClass = `col-12 col-lg-${12 / params.imageCount}`;
 
                 imageIds.forEach((id) => {
                     let imgContainer = document.createElement('div');
                     imgContainer.className = `img-container ${colClass}`;
-
-                    // 根據間距設定調整 padding
-                    if (!imageGap) {
-                        imgContainer.style.padding = '0';
-                    }
+                    // 應用圖片間距
+                    imgContainer.style.padding = `${imageGapV / 2}px ${imageGapH / 2}px`;
 
                     let img = document.createElement('img');
-
-                    // 支援完整 URL 和 Imgur ID
+                    // 支援完整URL和Imgur ID
                     if (id.startsWith('http') || id.includes('%')) {
-                        // 完整 URL（可能已編碼）
+                        // 完整URL（可能已編碼）
                         try {
                             img.src = decodeURIComponent(id);
                         } catch (e) {
@@ -343,7 +325,7 @@
                     }
                     img.alt = "Image";
 
-                    if ((params.imageCount || 3) < 2) {
+                    if (params.imageCount < 2) {
                         img.classList.add('small-image');
                     }
 
@@ -351,21 +333,15 @@
                     container.appendChild(imgContainer);
                 });
             } else {
-                container.innerHTML = "<h1 style='color:#333'>No image ID provided in the URL</h1>";
+                container.innerHTML = "<h1 style='color:white'>No image ID provided in the URL</h1>";
             }
 
             // 設定footer的顏色和顯示
-            const footer = document.getElementById('footer');
             footer.style.backgroundColor = params.primaryColor || '#2D3E2F';
-
-            // 根據 showFooter 參數決定是否顯示
-            if (!showFooter) {
-                footer.style.display = 'none !important';
-                footer.remove(); // 完全移除以確保不顯示
-            }
+            footer.style.display = showFooter ? 'block' : 'none';
         }
 
-        // 應用背景設定
+        // 新增：應用背景設定
         function applyBackground(type, color, imageUrl) {
             const body = document.body;
             if (type === 'color') {
@@ -376,9 +352,8 @@
                 body.style.backgroundSize = 'cover';
                 body.style.backgroundRepeat = 'no-repeat';
                 body.style.backgroundPosition = 'center center';
-                body.style.backgroundAttachment = 'fixed';
             }
-            // type === 'dots' 時保持原有 CSS（預設點點背景）
+            // type === 'dots' 時保持原有 CSS（不做任何更改）
         }
 
         window.onload = main;
