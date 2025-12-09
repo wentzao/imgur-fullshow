@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文藻美語 公告訊息</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/news-icon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        @font-face {
+            font-family: 'GenSenRounded';
+            src: url('GenSenRounded-R.otf') format('opentype');
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFF;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            background-image: url("https://i.imgur.com/9zLmZuM.png");
+            background-size: 20px;
+            background-repeat: repeat;
+            background-position: center center;
+        }
+
+        .container-fluid {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .img-container {
+            padding: 10px;
+            border-radius: 15px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .img-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .title {
+            padding: 10px 20px;
+            border-radius: 30px;
+            width: fit-content;
+            max-width: 100%;
+            color: #FFF;
+            font-size: 2em;
+            text-align: left;
+            font-family: 'Noto Sans TC', sans-serif;
+            margin-bottom: 5px;
+        }
+
+        .date {
+            padding: 5px 15px;
+            border-radius: 30px;
+            width: fit-content;
+            max-width: 100%;
+            color: #000;
+            font-size: 0.8em;
+            text-align: right;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .title-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .date-container {
+            transform: translateX(70%);
+            margin-top: -2%;
+        }
+
+        @media (max-width: 767px) {
+            .title-container {
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .date-container {
+                margin-left: 0;
+                transform: translateX(90%);
+                margin-top: -5%;
+            }
+
+            .date {
+                font-size: 1em;
+            }
+
+            .title {
+                font-size: 2em;
+            }
+
+            #content {
+                padding: 0px !important;
+            }
+        }
+
+        .footer-section {
+            color: #FFF;
+            text-align: center;
+            font-family: 'Noto Sans TC', sans-serif;
+            width: 100%;
+            height: 30px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            background-color: #FFF;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+
+        .loading-spinner i {
+            font-size: 3em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-spinner" class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <div id="content" style="padding: 20px; display: none;">
+        <div id="image-container" class="container-fluid"></div>
+    </div>
+
+    <footer class="footer-section" id="footer">
+        <p>文藻美語 WenTzao School©</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <script>
+        async function main() {
+            try {
+                await liff.init({ liffId: "1660786685-j636WZpM" });
+
+                if (liff.isInClient()) {
+                    const context = liff.getContext();
+                    const profile = await liff.getProfile();
+
+                    const params = getQueryParams();
+                    displayParams(params);
+                } else {
+                    const params = getQueryParams();
+                    displayParams(params);
+                }
+            } catch (error) {
+                const params = getQueryParams();
+                displayParams(params);
+            } finally {
+                document.getElementById("loading-spinner").style.display = "none";
+                document.getElementById("content").style.display = "block";
+                document.getElementById("footer").style.display = "block";
+            }
+        }
+
+        function getQueryParams() {
+            let params = {};
+            let queryString = window.location.search.substring(1);
+            let regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        function decompressData(data) {
+            return LZString.decompressFromEncodedURIComponent(data);
+        }
+
+        function parseDecodedParams(data) {
+            let params = {};
+            let regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(data)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        function formatDateString(dateString) {
+            if (dateString.length === 8) {
+                return dateString.slice(0, 4) + '/' + dateString.slice(4, 6) + '/' + dateString.slice(6, 8);
+            }
+            return dateString;
+        }
+
+        function displayParams(params) {
+            let container = document.getElementById("image-container");
+
+            if (params.data) {
+                let decompressedData = decompressData(params.data);
+                params = parseDecodedParams(decompressedData);
+            }
+
+            // 解析新參數（向下相容：缺少時使用預設值）
+            const showTitle = params.st !== '0';  // 預設顯示
+            const showFooter = params.sf !== '0'; // 預設顯示
+            const contentPadding = params.cp || '10';
+            const bgType = params.bt || 'dots';
+            const bgColor = params.bc ? decodeURIComponent(params.bc) : '#FFFFFF';
+            const bgImage = params.bi ? decodeURIComponent(params.bi) : null;
+            const imageLayout = params.il || 'horizontal';
+            const imageGap = params.ig !== '0'; // 預設有間距
+
+            // 應用背景設定
+            applyBackground(bgType, bgColor, bgImage);
+
+            // 應用邊界
+            document.getElementById('content').style.padding = contentPadding + 'px';
+
+            // 應用圖片容器樣式
+            if (imageLayout === 'vertical') {
+                container.style.flexDirection = 'column';
+                container.style.alignItems = 'center';
+            } else {
+                container.style.flexDirection = 'row';
+            }
+
+            // 圖片間距
+            if (!imageGap) {
+                container.style.gap = '0';
+            } else {
+                container.style.gap = '10px';
+            }
+
+            // 標題和日期（根據 showTitle 參數決定是否顯示）
+            if (params.title && showTitle) {
+                document.title = params.title;
+
+                let titleContainer = document.createElement('div');
+                titleContainer.className = 'title-container';
+
+                let title = document.createElement('div');
+                title.className = 'title';
+                title.style.backgroundColor = params.primaryColor || '#2D3E2F';
+                title.innerText = params.title;
+
+                titleContainer.appendChild(title);
+                container.appendChild(titleContainer);
+
+                if (params.date) {
+                    let formattedDate = formatDateString(params.date);
+                    let dateContainer = document.createElement('div');
+                    dateContainer.className = 'date-container';
+
+                    let date = document.createElement('div');
+                    date.className = 'date';
+                    date.style.backgroundColor = params.secondaryColor || '#dfecdb';
+                    date.innerText = formattedDate;
+
+                    dateContainer.appendChild(date);
+                    titleContainer.appendChild(dateContainer);
+                }
+            } else if (params.title) {
+                document.title = params.title;
+            }
+
+            if (params.id) {
+                let imageIds = params.id.split(',');
+                let colClass = imageLayout === 'vertical'
+                    ? 'col-12'
+                    : `col-12 col-lg-${12 / (params.imageCount || 3)}`;
+
+                imageIds.forEach((id) => {
+                    let imgContainer = document.createElement('div');
+                    imgContainer.className = `img-container ${colClass}`;
+
+                    if (!imageGap) {
+                        imgContainer.style.padding = '0';
+                    }
+
+                    let img = document.createElement('img');
+
+                    // 支援完整 URL 和 Imgur ID
+                    if (id.startsWith('http') || id.includes('%')) {
+                        try {
+                            img.src = decodeURIComponent(id);
+                        } catch (e) {
+                            img.src = id;
+                        }
+                    } else {
+                        img.src = "https://i.imgur.com/" + id + ".jpg";
+                    }
+                    img.alt = "Image";
+
+                    imgContainer.appendChild(img);
+                    container.appendChild(imgContainer);
+                });
+            } else {
+                container.innerHTML = "<h1 style='color:#333'>No image ID provided in the URL</h1>";
+            }
+
+            // 設定footer的顏色和顯示
+            const footer = document.getElementById('footer');
+            footer.style.backgroundColor = params.primaryColor || '#2D3E2F';
+
+            if (!showFooter) {
+                footer.style.display = 'none !important';
+                footer.remove();
+            }
+        }
+
+        // 應用背景設定
+        function applyBackground(type, color, imageUrl) {
+            const body = document.body;
+            if (type === 'color') {
+                body.style.backgroundImage = 'none';
+                body.style.backgroundColor = color;
+            } else if (type === 'image' && imageUrl) {
+                body.style.backgroundImage = `url("${imageUrl}")`;
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundRepeat = 'no-repeat';
+                body.style.backgroundPosition = 'center center';
+                body.style.backgroundAttachment = 'fixed';
+            }
+        }
+
+        window.onload = main;
+    </script>
+</body>
+
+</html>
