@@ -316,7 +316,9 @@
 
             if (params.id) {
                 let imageIds = params.id.split(',');
-                let colClass = `col-12 col-lg-${12 / params.imageCount}`;
+                // 確保 imageCount 有預設值並正確轉換為數字
+                const imageCount = parseInt(params.imageCount) || 3;
+                let colClass = `col-12 col-lg-${12 / imageCount}`;
 
                 imageIds.forEach((id) => {
                     let imgContainer = document.createElement('div');
