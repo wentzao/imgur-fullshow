@@ -320,6 +320,12 @@
                 const imageCount = parseInt(params.imageCount) || 3;
                 let colClass = `col-12 col-lg-${12 / imageCount}`;
 
+                // 創建 row 容器讓 Bootstrap grid 正常運作
+                let rowContainer = document.createElement('div');
+                rowContainer.className = 'row';
+                rowContainer.style.width = '100%';
+                container.appendChild(rowContainer);
+
                 imageIds.forEach((id) => {
                     let imgContainer = document.createElement('div');
                     imgContainer.className = `img-container ${colClass}`;
@@ -352,7 +358,7 @@
                     }
 
                     imgContainer.appendChild(img);
-                    container.appendChild(imgContainer);
+                    rowContainer.appendChild(imgContainer);
                 });
             } else {
                 container.innerHTML = "<h1 style='color:white'>No image ID provided in the URL</h1>";
